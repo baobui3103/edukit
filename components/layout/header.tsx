@@ -7,10 +7,11 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export function Header() {
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center px-4 md:hidden sticky top-0 z-50">
+    <header className="h-16 bg-background border-b border-border flex items-center px-4 md:hidden sticky top-0 z-50">
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="-ml-2">
@@ -24,6 +25,9 @@ export function Header() {
         </SheetContent>
       </Sheet>
       <div className="ml-4 font-bold text-lg">EduKit</div>
+      <div className="ml-auto">
+        <ModeToggle />
+      </div>
     </header>
   );
 }
