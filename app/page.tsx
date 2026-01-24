@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus } from "lucide-react";
+import { Plus, Stamp } from "lucide-react";
 
 export default function Home() {
   return (
@@ -14,9 +15,29 @@ export default function Home() {
         </p>
       </section>
 
-      {/* Placeholder Cards */}
+      {/* Feature Cards */}
       <section className="grid md:grid-cols-3 gap-6">
-        {[1, 2, 3].map((i) => (
+        {/* PDF Stamper Card */}
+        <Link href="/tools/pdf-stamper">
+          <Card className="border-2 shadow-sm bg-card hover:bg-accent transition-colors cursor-pointer group h-full">
+            <CardHeader className="text-center pb-2">
+              <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors mb-2">
+                <Stamp className="w-6 h-6 text-primary group-hover:text-primary" />
+              </div>
+              <CardTitle className="group-hover:text-foreground">
+                Chèn dấu PDF
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground text-center">
+                Thêm nội dung văn bản vào hàng loạt trang PDF một cách nhanh chóng
+              </p>
+            </CardContent>
+          </Card>
+        </Link>
+
+        {/* Placeholder Cards */}
+        {[1, 2].map((i) => (
           <Card
             key={i}
             className="border-dashed border-2 shadow-sm bg-card hover:bg-accent transition-colors cursor-pointer group"

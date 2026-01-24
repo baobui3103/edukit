@@ -4,14 +4,21 @@ import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Header } from "@/components/layout/header";
 import { ThemeProvider } from "@/components/theme-provider";
-
-import { ModeToggle } from "@/components/mode-toggle";
+import { SidebarProvider } from "@/components/layout/sidebar-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "EduKit",
   description: "Trợ lý ảo hỗ trợ giáo viên soạn thảo giáo án",
+  icons: {
+    icon: [
+      { url: "/icon.png", type: "image/png" },
+      { url: "/icon.ico", type: "image/x-icon" },
+    ],
+    shortcut: "/icon.ico",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
@@ -30,24 +37,22 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex h-screen overflow-hidden">
-            {/* Desktop Sidebar */}
-            <div className="hidden md:block">
-              <Sidebar />
-            </div>
+          <SidebarProvider>
+            <div className="flex h-screen overflow-hidden">
+              {/* Desktop Sidebar */}
+              <div className="hidden md:block">
+                <Sidebar />
+              </div>
 
-            {/* Main Content Area */}
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <Header />
-              {/* Desktop Top Bar */}
-              <header className="hidden md:flex h-16 items-center justify-end px-8 border-b border-border bg-card">
-                <ModeToggle />
-              </header>
-              <main className="flex-1 overflow-y-auto p-4 md:p-8">
-                {children}
-              </main>
+              {/* Main Content Area */}
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <Header />
+                <main className="flex-1 overflow-y-auto p-4 md:p-8">
+                  {children}
+                </main>
+              </div>
             </div>
-          </div>
+          </SidebarProvider>
         </ThemeProvider>
       </body>
     </html>
