@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { LayoutDashboard, PenTool, Settings } from "lucide-react";
+import { LayoutDashboard, PenTool, Settings, Stamp } from "lucide-react";
 
 export function Sidebar({ className }: { className?: string }) {
   const navItems = [
     { name: "Tổng quan", href: "/", icon: LayoutDashboard },
     { name: "Công cụ", href: "/tools", icon: PenTool },
+    { name: "Chèn dấu PDF", href: "/tools/pdf-stamper", icon: Stamp },
     { name: "Cài đặt", href: "/settings", icon: Settings },
   ];
 
