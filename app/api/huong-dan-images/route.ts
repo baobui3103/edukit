@@ -3,8 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const TAB_DIR_MAP = {
-  "chu-hoa-kieu-1": "huong-dan-chu-hoa-kieu-1",
-  "chu-hoa-kieu-2": "huong-dan-chu-hoa-kieu-2",
+  "chu-hoa": "huong-dan-chu-hoa",
   "chu-thuong": "huong-dan-chu-thuong",
   "chu-so": "huong-dan-chu-so",
   "viet-net": "huong-dan-viet-net",
