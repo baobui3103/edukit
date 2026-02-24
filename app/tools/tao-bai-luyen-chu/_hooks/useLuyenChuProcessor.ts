@@ -91,7 +91,6 @@ export function useLuyenChuProcessor(rules: ReplacementRule[] | null) {
         } catch (err) {
           console.error("Fallback copy failed", err);
         }
-      document.body.removeChild(ta);
       }
     }
 
