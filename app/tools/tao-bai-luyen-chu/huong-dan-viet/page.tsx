@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Download, ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Download,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  Copy,
+  Check,
+} from "lucide-react";
 
 type TabId = "chu-hoa" | "chu-thuong" | "chu-so" | "viet-net";
 
@@ -25,14 +33,18 @@ const TABS: { id: TabId; label: string }[] = [
   },
 ];
 
+type ChuHoaVariant = "kieu-1" | "kieu-2";
+
 export default function HuongDanVietPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>("chu-hoa");
+  const [chuHoaVariant, setChuHoaVariant] = useState<ChuHoaVariant>("kieu-1");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [images, setImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedSrc, setCopiedSrc] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -40,7 +52,11 @@ export default function HuongDanVietPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/huong-dan-images?tab=${activeTab}`);
+        const apiTab =
+          activeTab === "chu-hoa"
+            ? (`chu-hoa-${chuHoaVariant}` as const)
+            : activeTab;
+        const res = await fetch(`/api/huong-dan-images?tab=${apiTab}`);
         const data = await res.json();
         if (!res.ok) {
           if (!cancelled) {
@@ -82,6 +98,18 @@ export default function HuongDanVietPage() {
 
   const zoomIn = () => setZoom((z) => Math.min(3, z + 0.25));
   const zoomOut = () => setZoom((z) => Math.max(0.5, z - 0.25));
+
+  const handleCopy = async (src: string) => {
+    try {
+      await navigator.clipboard.writeText(src);
+      setCopiedSrc(src);
+      setTimeout(() => {
+        setCopiedSrc((current) => (current === src ? null : current));
+      }, 1500);
+    } catch {
+      // ignore
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -136,6 +164,25 @@ export default function HuongDanVietPage() {
             ))}
           </div>
 
+          {activeTab === "chu-hoa" && (
+            <div className="inline-flex flex-wrap gap-2 border border-dashed border-border rounded-lg p-1 bg-muted/40">
+              {(["kieu-1", "kieu-2"] as ChuHoaVariant[]).map((variant) => (
+                <button
+                  key={variant}
+                  type="button"
+                  onClick={() => setChuHoaVariant(variant)}
+                  className={`px-3 py-1.5 rounded-md text-xs transition-colors ${
+                    chuHoaVariant === variant
+                      ? "bg-background text-foreground shadow-sm"
+                      : "text-muted-foreground hover:bg-background/60"
+                  }`}
+                >
+                  {variant === "kieu-1" ? "Kiểu 1" : "Kiểu 2"}
+                </button>
+              ))}
+            </div>
+          )}
+
           {isLoading && (
             <div className="text-sm text-muted-foreground">
               Đang tải hình hướng dẫn...
@@ -155,8 +202,9 @@ export default function HuongDanVietPage() {
           {!isLoading && !error && images.length > 0 && (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {images.map((src, index) => {
-                const tab = TABS.find((t) => t.id === activeTab)!;
-                const alt = `${tab.label} ${index + 1}`;
+                const filename = src.split("/").pop() ?? "";
+                const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+                const alt = nameWithoutExt || filename || src;
                 return (
                   <div
                     key={src}
@@ -181,14 +229,33 @@ export default function HuongDanVietPage() {
                       <span className="text-xs text-muted-foreground truncate">
                         {alt}
                       </span>
-                      <a
-                        href={src}
-                        download
-                        className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-background hover:bg-accent border border-border"
-                      >
-                        <Download size={12} />
-                        Tải
-                      </a>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(src)}
+                          className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-background hover:bg-accent border border-border"
+                        >
+                          {copiedSrc === src ? (
+                            <>
+                              <Check size={12} />
+                              Đã copy
+                            </>
+                          ) : (
+                            <>
+                              <Copy size={12} />
+                              Copy
+                            </>
+                          )}
+                        </button>
+                        <a
+                          href={src}
+                          download
+                          className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-background hover:bg-accent border border-border"
+                        >
+                          <Download size={12} />
+                          Tải
+                        </a>
+                      </div>
                     </div>
                   </div>
                 );
