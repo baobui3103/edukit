@@ -15,7 +15,6 @@ export default function TaoBaiLuyenChuPage() {
     setInputText,
     outputText,
     fontSize,
-    setFontSize,
     isCopied,
     handleCopy,
     clearInput,
@@ -23,7 +22,7 @@ export default function TaoBaiLuyenChuPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20">
-      <Header fontSize={fontSize} onFontSizeChange={setFontSize} />
+      <Header />
       <main className="max-w-6xl mx-auto px-4 py-8">
         <GuideSection />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

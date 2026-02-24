@@ -7,7 +7,7 @@ import type { ReplacementRule } from "../_lib/types";
 export function useLuyenChuProcessor(rules: ReplacementRule[] | null) {
   const [inputText, setInputText] = useState("");
   const [outputText, setOutputText] = useState("");
-  const [fontSize, setFontSize] = useState(32);
+  const fontSize = 28;
   const [isCopied, setIsCopied] = useState(false);
 
   const processText = useCallback(
@@ -52,7 +52,6 @@ export function useLuyenChuProcessor(rules: ReplacementRule[] | null) {
     setInputText,
     outputText,
     fontSize,
-    setFontSize,
     isCopied,
     handleCopy,
     clearInput,
