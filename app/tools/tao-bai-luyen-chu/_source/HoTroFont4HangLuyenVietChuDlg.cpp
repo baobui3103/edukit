@@ -186,6 +186,13 @@ void CHoTroFont4HangLuyenVietChuDlg::Convert()
 	CString inputText;
 	GetDlgItemTextW(IDC_INPUT, inputText);
 	inputText = L" " + inputText + L" ";
+	inputText.Replace(L"\r\nr", L"\r\nǟ");
+	inputText.Replace(L"\nr", L"\nǟ");
+	inputText.Replace(L" r ", L" ǟ ");
+	inputText.Replace(L" r\r\n", L" ǟ\r\n");
+	inputText.Replace(L" r\n", L" ǟ\n");
+	inputText.Replace(L" r", L" ǟ");
+	
 	inputText.Replace(L",", L" | ");
 	inputText.Replace(L"|", L",");
 

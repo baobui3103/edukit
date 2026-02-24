@@ -1,4 +1,4 @@
-import { Download, FileText, Type, BookOpen } from "lucide-react";
+import { Download, FileText, Type, BookOpen, Ruler } from "lucide-react";
 
 type DownloadItem = {
   href: string;
@@ -29,6 +29,13 @@ const DOWNLOADS: readonly DownloadItem[] = [
     icon: BookOpen,
     download: false as const,
   },
+  {
+    href: "/tools/tao-bai-luyen-chu/anh-ke-dong-cho-mon-toan",
+    label: "Mẫu kẻ dòng Toán",
+    description: "Bộ ảnh kẻ dòng cho vở, phiếu bài tập môn Toán",
+    icon: Ruler,
+    download: false as const,
+  },
 ] as const;
 
 export function DownloadSection() {
@@ -38,18 +45,20 @@ export function DownloadSection() {
         <Download size={18} />
         Tải tài liệu
       </p>
-      <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
         {DOWNLOADS.map((item) => (
           <a
             key={item.href}
             href={item.href}
             {...(item.download === false ? {} : { download: true })}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-card border border-border hover:bg-accent hover:border-accent transition-colors text-sm"
+            className="flex items-start gap-2 px-4 py-3 rounded-lg bg-card border border-border hover:bg-accent hover:border-accent transition-colors text-sm"
           >
             <item.icon size={18} className="text-primary shrink-0" />
-            <div className="text-left">
-              <span className="font-medium block">{item.label}</span>
-              <span className="text-muted-foreground text-xs">
+            <div className="text-left space-y-0.5">
+              <span className="font-medium block leading-snug">
+                {item.label}
+              </span>
+              <span className="text-muted-foreground text-xs leading-snug block">
                 {item.description}
               </span>
             </div>

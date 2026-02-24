@@ -7,6 +7,7 @@ const TAB_DIR_MAP = {
   "chu-thuong": "huong-dan-chu-thuong",
   "chu-so": "huong-dan-chu-so",
   "viet-net": "huong-dan-viet-net",
+  "toan-ke-dong": "anh-ke-dong-cho-mon-toan",
 } as const;
 
 type TabKey = keyof typeof TAB_DIR_MAP;
