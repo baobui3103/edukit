@@ -6,6 +6,7 @@ import {
   DownloadSection,
   InputSection,
   OutputSection,
+  QuickCopySection,
 } from "./_components";
 import { useHp001Rules, useLuyenChuProcessor } from "./_hooks";
 
@@ -27,6 +28,7 @@ export default function TaoBaiLuyenChuPage() {
       <main className="max-w-6xl mx-auto px-4 py-8">
         <GuideSection />
         <DownloadSection />
+        <QuickCopySection />
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <InputSection
             value={inputText}
