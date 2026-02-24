@@ -187,3 +187,35 @@ body {
   @apply bg-background text-foreground;
   font-family: var(--font-sans);
 }
+
+@font-face {
+  font-family: "HP001 4 hang Web";
+  src: url("/fonts/web/HP001_4_hang_normal.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HP001 4 hang Web";
+  src: url("/fonts/web/HP001_4_hang_bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HP001 5 hang Web";
+  src: url("/fonts/web/HP001_5_hang_normal.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "HP001 5 hang Web";
+  src: url("/fonts/web/HP001_5_hang_bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
