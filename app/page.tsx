@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Stamp } from "lucide-react";
+import { Plus, Stamp, Type } from "lucide-react";
 
 export default function Home() {
   return (
@@ -36,27 +36,26 @@ export default function Home() {
           </Card>
         </Link>
 
-        {/* Placeholder Cards */}
-        {[1, 2].map((i) => (
-          <Card
-            key={i}
-            className="border-dashed border-2 shadow-sm bg-card hover:bg-accent transition-colors cursor-pointer group"
-          >
+        {/* Luyện chữ Card */}
+        <Link href="/tools/tao-bai-luyen-chu">
+          <Card className="border-2 shadow-sm bg-card hover:bg-accent transition-colors cursor-pointer group h-full">
             <CardHeader className="text-center pb-2">
-              <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center group-hover:bg-accent transition-colors mb-2">
-                <Plus className="w-6 h-6 text-muted-foreground group-hover:text-accent-foreground" />
+              <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors mb-2">
+                <Type className="w-6 h-6 text-primary group-hover:text-primary" />
               </div>
-              <CardTitle className="text-muted-foreground group-hover:text-foreground">
-                Tính năng mới
+              <CardTitle className="group-hover:text-foreground">
+                Tạo bài luyện chữ
               </CardTitle>
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground text-center">
-                Vị trí dành cho tính năng tương lai
+                Sinh văn bản luyện viết tiểu học chuẩn font 4 hàng từ câu chữ bình thường
               </p>
             </CardContent>
           </Card>
-        ))}
+        </Link>
+
+       
       </section>
     </div>
   );
