@@ -18,15 +18,38 @@ function extractHp001RulesFromCpp(cppSource: string): ReplacementRule[] {
 }
 
 export async function GET() {
-  const cppPath = path.join(
-    process.cwd(),
-    "SourceCode",
-    "HoTroFont4HangLuyenVietChuDlg.cpp"
-  );
+  const CPP_PATHS = [
+    path.join("app", "tools", "tao-bai-luyen-chu", "_source", "HoTroFont4HangLuyenVietChuDlg.cpp"),
+    path.join("SourceCode", "HoTroFont4HangLuyenVietChuDlg.cpp"),
+  ];
+
+  let cppPath: string | null = null;
+  for (const rel of CPP_PATHS) {
+    const full = path.join(process.cwd(), rel);
+    if (fs.existsSync(full)) {
+      cppPath = full;
+      break;
+    }
+  }
+
+  if (!cppPath) {
+    return NextResponse.json(
+      {
+        error: "Không tìm thấy HoTroFont4HangLuyenVietChuDlg.cpp",
+        detail: `Đã tìm: ${CPP_PATHS.join(", ")}`,
+      },
+      { status: 500 }
+    );
+  }
 
   let cppSource: string;
   try {
-    cppSource = fs.readFileSync(cppPath, "utf8");
+    const buffer = fs.readFileSync(cppPath);
+    if (buffer[0] === 0xff && buffer[1] === 0xfe) {
+      cppSource = buffer.toString("utf16le");
+    } else {
+      cppSource = buffer.toString("utf8");
+    }
   } catch (err) {
     return NextResponse.json(
       {
