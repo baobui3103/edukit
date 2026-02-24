@@ -1,15 +1,27 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Stamp, Type } from "lucide-react";
+import {
+  LayoutDashboard,
+  Stamp,
+  Type,
+  User2,
+  Mail,
+  Phone,
+  Github,
+  Globe2,
+  X,
+} from "lucide-react";
 import { useSidebar } from "./sidebar-provider";
 import { cn } from "@/lib/utils";
 
 export function Sidebar({ className }: Readonly<{ className?: string }>) {
   const { isCollapsed } = useSidebar();
   const pathname = usePathname();
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   const navItems = [
     { name: "Tổng quan", href: "/", icon: LayoutDashboard },
@@ -52,7 +64,12 @@ export function Sidebar({ className }: Readonly<{ className?: string }>) {
       </Link>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 space-y-2">
+      <nav
+        className={cn(
+          "flex-1 px-4",
+          isCollapsed ? "space-y-1" : "space-y-2"
+        )}
+      >
         {navItems.map((item) => {
           const isActive =
             item.href === "/"
@@ -68,7 +85,7 @@ export function Sidebar({ className }: Readonly<{ className?: string }>) {
                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
                 "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                 isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
-                isCollapsed && "justify-center px-2"
+                isCollapsed && "justify-center px-2 gap-0"
               )}
               title={isCollapsed ? item.name : undefined}
             >
@@ -76,7 +93,7 @@ export function Sidebar({ className }: Readonly<{ className?: string }>) {
               <span
                 className={cn(
                   "font-medium transition-opacity duration-300",
-                  isCollapsed && "opacity-0 w-0 overflow-hidden"
+                  isCollapsed && "hidden"
                 )}
               >
                 {item.name}
@@ -86,17 +103,110 @@ export function Sidebar({ className }: Readonly<{ className?: string }>) {
         })}
       </nav>
 
-      {/* Footer with version */}
-      <div className="p-4 border-t border-sidebar-border">
-        <div
-          className={cn(
-            "text-sm text-muted-foreground text-center transition-opacity duration-300",
-            isCollapsed && "opacity-0 h-0 overflow-hidden"
+      {/* Footer */}
+      <div className="p-3 border-t border-sidebar-border">
+        <div className="flex items-center justify-center">
+          {isCollapsed ? (
+            <button
+              type="button"
+              onClick={() => setIsContactOpen(true)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground text-[10px] shadow-sm hover:bg-primary/90"
+              title="Thông tin liên hệ"
+            >
+              <User2 className="h-3.5 w-3.5" />
+            </button>
+          ) : (
+            <p className="text-xs text-muted-foreground text-center">
+              <span className="mr-1 text-[11px]">Powered by</span>
+              <button
+                type="button"
+                onClick={() => setIsContactOpen(true)}
+                className="font-semibold text-primary hover:underline"
+              >
+                baobui3103
+              </button>
+            </p>
           )}
-        >
-          v0.2.0
         </div>
       </div>
+
+      {isContactOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center px-4"
+          onClick={() => setIsContactOpen(false)}
+        >
+          <div
+            className="max-w-sm w-full rounded-xl bg-card border border-border shadow-xl p-5 space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <User2 className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h2 className="text-sm font-semibold leading-tight">
+                    Thông tin liên hệ
+                  </h2>
+                  <p className="text-[11px] text-muted-foreground">
+                    Hỗ trợ EduKit &amp; Luyện Chữ Tiểu Học
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsContactOpen(false)}
+                className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border text-muted-foreground hover:text-foreground hover:bg-accent"
+                aria-label="Đóng"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Nếu bạn cần hỗ trợ thêm về công cụ Luyện Chữ Tiểu Học hoặc các dự án
+              khác, có thể liên hệ:
+            </p>
+            <div className="space-y-2 pt-1 text-xs text-foreground">
+              <div className="flex items-center gap-2">
+                <User2 className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="font-medium">Bảo Bùi (baobui3103)</span>
+              </div>
+              <a
+                href="https://www.facebook.com/baobui3103"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 hover:text-primary"
+              >
+                <Globe2 className="h-3.5 w-3.5 text-muted-foreground" />
+                <span>facebook.com/baobui3103</span>
+              </a>
+              <a
+                href="https://github.com/baobui3103"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-2 hover:text-primary"
+              >
+                <Github className="h-3.5 w-3.5 text-muted-foreground" />
+                <span>github.com/baobui3103</span>
+              </a>
+              <a
+                href="mailto:hongbao2003@gmail.com"
+                className="flex items-center gap-2 hover:text-primary"
+              >
+                <Mail className="h-3.5 w-3.5 text-muted-foreground" />
+                <span>hongbao2003@gmail.com</span>
+              </a>
+              <a
+                href="tel:0908141453"
+                className="flex items-center gap-2 hover:text-primary"
+              >
+                <Phone className="h-3.5 w-3.5 text-muted-foreground" />
+                <span>0908&nbsp;141&nbsp;453</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </aside>
   );
 }
