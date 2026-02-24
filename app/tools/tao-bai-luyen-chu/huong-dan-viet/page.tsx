@@ -2,15 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Download,
-  ZoomIn,
-  ZoomOut,
-  Maximize2,
-  Copy,
-  Check,
-} from "lucide-react";
+import { ArrowLeft, Download, ZoomIn, ZoomOut, Maximize2, Copy, Check } from "lucide-react";
 
 type TabId = "chu-hoa" | "chu-thuong" | "chu-so" | "viet-net";
 
@@ -33,12 +25,9 @@ const TABS: { id: TabId; label: string }[] = [
   },
 ];
 
-type ChuHoaVariant = "kieu-1" | "kieu-2";
-
 export default function HuongDanVietPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>("chu-hoa");
-  const [chuHoaVariant, setChuHoaVariant] = useState<ChuHoaVariant>("kieu-1");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [images, setImages] = useState<string[]>([]);
@@ -52,11 +41,7 @@ export default function HuongDanVietPage() {
       setIsLoading(true);
       setError(null);
       try {
-        const apiTab =
-          activeTab === "chu-hoa"
-            ? (`chu-hoa-${chuHoaVariant}` as const)
-            : activeTab;
-        const res = await fetch(`/api/huong-dan-images?tab=${apiTab}`);
+        const res = await fetch(`/api/huong-dan-images?tab=${activeTab}`);
         const data = await res.json();
         if (!res.ok) {
           if (!cancelled) {
@@ -99,15 +84,17 @@ export default function HuongDanVietPage() {
   const zoomIn = () => setZoom((z) => Math.min(3, z + 0.25));
   const zoomOut = () => setZoom((z) => Math.max(0.5, z - 0.25));
 
-  const handleCopy = async (src: string) => {
+  const handleCopyImage = async (src: string) => {
     try {
-      await navigator.clipboard.writeText(src);
-      setCopiedSrc(src);
-      setTimeout(() => {
-        setCopiedSrc((current) => (current === src ? null : current));
-      }, 1500);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(window.location.origin + src);
+        setCopiedSrc(src);
+        setTimeout(() => {
+          setCopiedSrc((current) => (current === src ? null : current));
+        }, 1500);
+      }
     } catch {
-      // ignore
+      // ignore clipboard errors
     }
   };
 
@@ -164,25 +151,6 @@ export default function HuongDanVietPage() {
             ))}
           </div>
 
-          {activeTab === "chu-hoa" && (
-            <div className="inline-flex flex-wrap gap-2 border border-dashed border-border rounded-lg p-1 bg-muted/40">
-              {(["kieu-1", "kieu-2"] as ChuHoaVariant[]).map((variant) => (
-                <button
-                  key={variant}
-                  type="button"
-                  onClick={() => setChuHoaVariant(variant)}
-                  className={`px-3 py-1.5 rounded-md text-xs transition-colors ${
-                    chuHoaVariant === variant
-                      ? "bg-background text-foreground shadow-sm"
-                      : "text-muted-foreground hover:bg-background/60"
-                  }`}
-                >
-                  {variant === "kieu-1" ? "Kiểu 1" : "Kiểu 2"}
-                </button>
-              ))}
-            </div>
-          )}
-
           {isLoading && (
             <div className="text-sm text-muted-foreground">
               Đang tải hình hướng dẫn...
@@ -200,11 +168,11 @@ export default function HuongDanVietPage() {
           )}
 
           {!isLoading && !error && images.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {images.map((src, index) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              {images.map((src) => {
                 const filename = src.split("/").pop() ?? "";
                 const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
-                const alt = nameWithoutExt || filename || src;
+                const label = nameWithoutExt || filename || src;
                 return (
                   <div
                     key={src}
@@ -217,7 +185,7 @@ export default function HuongDanVietPage() {
                     >
                       <img
                         src={src}
-                        alt={alt}
+                        alt={label}
                         className="w-full h-full object-contain transition-transform duration-200 hover:scale-[1.03]"
                       />
                       <div className="absolute bottom-2 right-2 inline-flex items-center gap-1 rounded-md bg-background/80 backdrop-blur px-2 py-1 text-[11px] text-muted-foreground">
@@ -227,25 +195,16 @@ export default function HuongDanVietPage() {
                     </button>
                     <div className="px-3 py-2 flex items-center justify-between gap-2 border-t border-border bg-muted/60">
                       <span className="text-xs text-muted-foreground truncate">
-                        {alt}
+                        {label}
                       </span>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
-                          onClick={() => handleCopy(src)}
+                          onClick={() => handleCopyImage(src)}
                           className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-background hover:bg-accent border border-border"
                         >
-                          {copiedSrc === src ? (
-                            <>
-                              <Check size={12} />
-                              Đã copy
-                            </>
-                          ) : (
-                            <>
-                              <Copy size={12} />
-                              Copy
-                            </>
-                          )}
+                          
+                          {copiedSrc === src ? <Check size={12} /> : <Copy size={12} />}
                         </button>
                         <a
                           href={src}
@@ -253,7 +212,6 @@ export default function HuongDanVietPage() {
                           className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-md bg-background hover:bg-accent border border-border"
                         >
                           <Download size={12} />
-                          Tải
                         </a>
                       </div>
                     </div>
@@ -266,8 +224,14 @@ export default function HuongDanVietPage() {
       </main>
 
       {lightboxImage && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex flex-col">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/80 backdrop-blur">
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex flex-col"
+          onClick={closeLightbox}
+        >
+          <div
+            className="flex items-center justify-between px-4 py-3 border-b border-border bg-background/80 backdrop-blur"
+            onClick={(e) => e.stopPropagation()}
+          >
             <span className="text-sm font-medium text-foreground">
               Xem hình lớn
             </span>
@@ -295,7 +259,10 @@ export default function HuongDanVietPage() {
               </button>
             </div>
           </div>
-          <div className="flex-1 flex items-center justify-center overflow-auto p-4">
+          <div
+            className="flex-1 flex items-center justify-center overflow-auto p-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div
               className="inline-block"
               style={{ transform: `scale(${zoom})`, transformOrigin: "center" }}
