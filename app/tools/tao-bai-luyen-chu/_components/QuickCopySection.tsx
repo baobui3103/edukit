@@ -70,7 +70,7 @@ export function QuickCopySection() {
             Copy nhanh các ký tự
           </p>
           <p className="text-xs text-muted-foreground">
-            Bấm vào ký tự để copy nhanh, dùng khi soạn văn bản gốc.
+            Bấm vào ký tự để copy nhanh
           </p>
         </div>
         <div className="inline-flex items-center rounded-lg border border-border bg-card p-0.5 text-xs">
