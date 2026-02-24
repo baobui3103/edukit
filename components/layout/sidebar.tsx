@@ -2,16 +2,19 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { LayoutDashboard, Stamp } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { LayoutDashboard, Stamp, Type } from "lucide-react";
 import { useSidebar } from "./sidebar-provider";
 import { cn } from "@/lib/utils";
 
 export function Sidebar({ className }: Readonly<{ className?: string }>) {
   const { isCollapsed } = useSidebar();
+  const pathname = usePathname();
 
   const navItems = [
     { name: "Tổng quan", href: "/", icon: LayoutDashboard },
     { name: "Chèn dấu PDF", href: "/tools/pdf-stamper", icon: Stamp },
+    { name: "Tạo bài luyện chữ", href: "/tools/tao-bai-luyen-chu", icon: Type },
   ];
 
   return (
@@ -23,7 +26,13 @@ export function Sidebar({ className }: Readonly<{ className?: string }>) {
       )}
     >
       {/* Header */}
-      <Link href="/" className={cn("p-6 transition-all flex items-center gap-3", isCollapsed && "p-4 justify-center")}>
+      <Link
+        href="/"
+        className={cn(
+          "p-6 transition-all flex items-center gap-3",
+          isCollapsed && "p-4 justify-center"
+        )}
+      >
         <Image
           src="/icon.png"
           alt="EduKit"
@@ -44,27 +53,37 @@ export function Sidebar({ className }: Readonly<{ className?: string }>) {
 
       {/* Navigation */}
       <nav className="flex-1 px-4 space-y-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 px-4 py-3 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-lg transition-colors",
-              isCollapsed && "justify-center px-2"
-            )}
-            title={isCollapsed ? item.name : undefined}
-          >
-            <item.icon className="w-5 h-5 flex-shrink-0" />
-            <span
+        {navItems.map((item) => {
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname === item.href || pathname.startsWith(`${item.href}/`);
+
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
-                "font-medium transition-opacity duration-300",
-                isCollapsed && "opacity-0 w-0 overflow-hidden"
+                "flex items-center gap-3 px-4 py-3 rounded-lg transition-colors",
+                "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
+                isCollapsed && "justify-center px-2"
               )}
+              title={isCollapsed ? item.name : undefined}
             >
-              {item.name}
-            </span>
-          </Link>
-        ))}
+              <item.icon className="w-5 h-5 flex-shrink-0" />
+              <span
+                className={cn(
+                  "font-medium transition-opacity duration-300",
+                  isCollapsed && "opacity-0 w-0 overflow-hidden"
+                )}
+              >
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
       </nav>
 
       {/* Footer with version */}
