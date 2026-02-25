@@ -40,7 +40,7 @@ export const FileUploadSection = memo(function FileUploadSection({
   return (
     <div className="space-y-3">
       <Label className="text-sm font-semibold uppercase tracking-wider">
-        1. Tải file lên
+        Tải file lên
       </Label>
 
       {file ? (

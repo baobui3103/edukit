@@ -35,7 +35,7 @@ const DEFAULT_CONFIG: StampConfig = {
   pageRange: '',
   x: 50,
   y: 50,
-  fontSize: 12,
+  fontSize: 8,
   color: '#000000',
   opacity: 1,
   lineHeight: 15,
