@@ -39,7 +39,7 @@ export const TextConfigSection = memo(function TextConfigSection({
       <div className="space-y-3">
         <Label className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
           <Type className="w-4 h-4" />
-          2. Nội dung
+          Nội dung
         </Label>
         <Textarea
           value={text}
@@ -53,7 +53,7 @@ export const TextConfigSection = memo(function TextConfigSection({
       <div className="space-y-3">
         <Label className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
           <Layers className="w-4 h-4" />
-          3. Phạm vi trang
+          Phạm vi trang
         </Label>
         <Input
           type="text"

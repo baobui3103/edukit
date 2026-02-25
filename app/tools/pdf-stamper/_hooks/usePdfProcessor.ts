@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { PDFDocument, rgb, StandardFonts, degrees } from 'pdf-lib';
+import { PDFDocument, rgb, degrees } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
 import { hexToRgb, getPageIndices, calculateDrawPosition } from '../_lib/pdf-utils';
 import type { StampConfig, PdfState } from '../_lib/types';
+import { PDF_DIMENSIONS } from '../_lib/types';
 
 const DEBOUNCE_DELAY = 500;
 
@@ -97,9 +99,17 @@ export function usePdfProcessor(config: StampConfig): UsePdfProcessorReturn {
       setPdfState((prev) => ({ ...prev, isProcessing: true, error: null }));
 
       const pdfDoc = await PDFDocument.load(bytes);
+      // Enable Unicode-capable custom fonts (supports tiếng Việt, e.g. "ọ")
+      pdfDoc.registerFontkit(fontkit);
+
       const totalPages = pdfDoc.getPageCount();
       const selectedIndices = getPageIndices(currentConfig.pageRange, totalPages);
-      const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      // Dùng font Noto Sans (chữ in chuẩn sách giáo khoa, hỗ trợ tiếng Việt)
+      const fontBytes = await fetch('/fonts/Noto_Sans/NotoSans-Regular.ttf').then((res) =>
+        res.arrayBuffer()
+      );
+      // Không subset để tránh mọi vấn đề với bảng ký tự tiếng Việt
+      const font = await pdfDoc.embedFont(new Uint8Array(fontBytes));
       const pages = pdfDoc.getPages();
       const rgbColor = hexToRgb(currentConfig.color);
 
@@ -110,15 +120,26 @@ export function usePdfProcessor(config: StampConfig): UsePdfProcessorReturn {
 
         const { width, height } = page.getSize();
         const rotation = page.getRotation().angle;
+
+        // Scale touchpad coordinates (based on PDF_DIMENSIONS) to actual page size
+        const scaledX = (currentConfig.x / PDF_DIMENSIONS.WIDTH) * width;
+        const scaledY = (currentConfig.y / PDF_DIMENSIONS.HEIGHT) * height;
+
         const { x: drawX, y: drawY, rotate: drawRotate } = calculateDrawPosition(
-          currentConfig.x,
-          currentConfig.y,
+          scaledX,
+          scaledY,
           width,
           height,
           rotation
         );
 
-        page.drawText(currentConfig.text, {
+        const normalizedText = currentConfig.text.normalize('NFC');
+        // Hỗ trợ placeholder trang: {page} = trang hiện tại (1-based), {pages} = tổng số trang
+        const pageAwareText = normalizedText
+          .replace(/\{page\}/gi, String(index + 1))
+          .replace(/\{pages\}/gi, String(totalPages));
+
+        page.drawText(pageAwareText, {
           x: drawX,
           y: drawY,
           size: currentConfig.fontSize,

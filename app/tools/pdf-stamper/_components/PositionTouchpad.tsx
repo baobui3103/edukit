@@ -29,7 +29,7 @@ export const PositionTouchpad = memo(function PositionTouchpad({
     <div className="space-y-4">
       <Label className="text-sm font-semibold uppercase tracking-wider flex items-center gap-2">
         <Move className="w-4 h-4" />
-        4. Vị trí (Kéo thả) & Kiểu
+        Vị trí
       </Label>
 
       <div className="bg-muted p-4 rounded-xl border">

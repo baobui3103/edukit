@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from 'react';
+import dynamic from 'next/dynamic';
 import { FileText, Download, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,9 +20,14 @@ import { FileUploadSection } from './_components/FileUploadSection';
 import { TextConfigSection } from './_components/TextConfigSection';
 import { PositionTouchpad } from './_components/PositionTouchpad';
 import { StyleConfigSection } from './_components/StyleConfigSection';
-import { PdfPreview } from './_components/PdfPreview';
 import { ErrorAlert } from './_components/ErrorAlert';
 import type { StampConfig } from './_lib/types';
+
+// PDF preview needs browser APIs (pdf.js), so load it only on client
+const PdfPreview = dynamic(
+  () => import('./_components/PdfPreview').then((mod) => mod.PdfPreview),
+  { ssr: false },
+);
 
 // Default config values
 const DEFAULT_CONFIG: StampConfig = {
@@ -29,7 +35,7 @@ const DEFAULT_CONFIG: StampConfig = {
   pageRange: '',
   x: 50,
   y: 50,
-  fontSize: 12,
+  fontSize: 8,
   color: '#000000',
   opacity: 1,
   lineHeight: 15,
@@ -38,6 +44,9 @@ const DEFAULT_CONFIG: StampConfig = {
 export default function PDFStamperPage() {
   // Stamp configuration state
   const [config, setConfig] = useState<StampConfig>(DEFAULT_CONFIG);
+  const [activeTab, setActiveTab] = useState<'upload' | 'content' | 'position' | 'style'>(
+    'upload',
+  );
 
   // Memoize config for hook to prevent unnecessary re-renders
   const memoizedConfig = useMemo(() => config, [config]);
@@ -79,18 +88,19 @@ export default function PDFStamperPage() {
   const handleFileSelect = useCallback(
     (file: File) => {
       handleFileUpload(file);
+      setActiveTab('content');
     },
-    [handleFileUpload]
+    [handleFileUpload],
   );
 
   const hasFile = Boolean(pdfState.file);
 
   return (
-    <div className="h-screen bg-background p-4 md:p-6 overflow-hidden">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 h-full">
+    <div className="min-h-[calc(100vh-72px)] bg-background px-4 md:px-8 py-4">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[300px_minmax(0,1.4fr)] gap-4">
         {/* Left Column: Controls */}
-        <div className="lg:col-span-1 flex flex-col min-h-0 overflow-hidden">
-          <Card className="flex flex-col min-h-0 h-full">
+        <div className="flex flex-col">
+          <Card className="flex flex-col h-full">
             <CardHeader className="border-b py-3 flex-shrink-0">
               <CardTitle className="flex items-center gap-2 text-base">
                 <FileText className="w-5 h-5" />
@@ -111,49 +121,88 @@ export default function PDFStamperPage() {
               {/* Error Display */}
               <ErrorAlert message={pdfState.error} />
 
-              {/* Config Sections - only show when file is loaded */}
+              {/* Config Sections in tabs - only show when file is loaded */}
               {hasFile && (
                 <>
                   <Separator />
 
-                  {/* Text & Page Range */}
-                  <TextConfigSection
-                    text={config.text}
-                    pageRange={config.pageRange}
-                    onTextChange={handleTextChange}
-                    onPageRangeChange={handlePageRangeChange}
-                  />
+                  <div className="flex gap-1 mb-2 border border-border rounded-lg p-1 bg-muted/40 text-xs">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('content')}
+                      className={`flex-1 rounded-md px-2 py-1 text-center transition-colors ${
+                        activeTab === 'content'
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-background/60'
+                      }`}
+                    >
+                      Nội dung
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('position')}
+                      className={`flex-1 rounded-md px-2 py-1 text-center transition-colors ${
+                        activeTab === 'position'
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-background/60'
+                      }`}
+                    >
+                      Vị trí
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('style')}
+                      className={`flex-1 rounded-md px-2 py-1 text-center transition-colors ${
+                        activeTab === 'style'
+                          ? 'bg-background text-foreground shadow-sm'
+                          : 'text-muted-foreground hover:bg-background/60'
+                      }`}
+                    >
+                      Kiểu chữ
+                    </button>
+                  </div>
 
-                  {/* Position Touchpad */}
-                  <PositionTouchpad
-                    x={config.x}
-                    y={config.y}
-                    onPositionChange={handlePositionChange}
-                  />
+                  {activeTab === 'content' && (
+                    <TextConfigSection
+                      text={config.text}
+                      pageRange={config.pageRange}
+                      onTextChange={handleTextChange}
+                      onPageRangeChange={handlePageRangeChange}
+                    />
+                  )}
 
-                  {/* Style Config */}
-                  <StyleConfigSection
-                    fontSize={config.fontSize}
-                    lineHeight={config.lineHeight}
-                    color={config.color}
-                    opacity={config.opacity}
-                    onFontSizeChange={handleFontSizeChange}
-                    onLineHeightChange={handleLineHeightChange}
-                    onColorChange={handleColorChange}
-                    onOpacityChange={handleOpacityChange}
-                  />
+                  {activeTab === 'position' && (
+                    <PositionTouchpad
+                      x={config.x}
+                      y={config.y}
+                      onPositionChange={handlePositionChange}
+                    />
+                  )}
+
+                  {activeTab === 'style' && (
+                    <StyleConfigSection
+                      fontSize={config.fontSize}
+                      lineHeight={config.lineHeight}
+                      color={config.color}
+                      opacity={config.opacity}
+                      onFontSizeChange={handleFontSizeChange}
+                      onLineHeightChange={handleLineHeightChange}
+                      onColorChange={handleColorChange}
+                      onOpacityChange={handleOpacityChange}
+                    />
+                  )}
                 </>
               )}
             </CardContent>
 
             {/* Download Button */}
             {hasFile && (
-              <CardFooter className="border-t p-4 flex-shrink-0">
+              <CardFooter className="border-t p-3 flex-shrink-0">
                 <Button
                   onClick={handleDownload}
                   disabled={!pdfState.previewUrl || pdfState.isProcessing}
                   className="w-full"
-                  size="lg"
+                  size="sm"
                 >
                   {pdfState.isProcessing ? (
                     <>
@@ -173,7 +222,7 @@ export default function PDFStamperPage() {
         </div>
 
         {/* Right Column: Preview */}
-        <div className="lg:col-span-2 flex flex-col min-h-0 overflow-hidden">
+        <div className="flex flex-col">
           <PdfPreview previewUrl={pdfState.previewUrl} />
         </div>
       </div>
